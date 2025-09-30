@@ -1,0 +1,6 @@
+psutil          # to interact with system resources
+schedule        # for scheduling background tasks
+llama-cpp-python # if you want local LLM integration
+requests        # for any HTTP API calls
+pytest          # for running unit tests
+huggingface_hub # to download model files from Hugging Face
