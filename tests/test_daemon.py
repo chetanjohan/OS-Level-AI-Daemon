@@ -1,6 +1,8 @@
 import builtins
 from main import Daemon
 
+# MCP test
+
 
 def test_daemon_run_once(monkeypatch):
     # Force fetch_task to return a predictable prompt
