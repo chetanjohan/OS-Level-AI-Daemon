@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from typing import Dict, Any, List
 import psutil
+from malware_scanner import virus_scan as run_virus_scan
 
 
 def anomaly_score() -> float:
@@ -24,10 +25,9 @@ def anomaly_score() -> float:
 
 
 def malware_scan_stub() -> List[str]:
-    findings: List[str] = []
-    # Placeholders for real scanning; we only provide safe mock messages.
-    # A real implementation would hash files, check signatures, and use ML models.
-    findings.append("No known malware signatures detected (stub).")
-    return findings
+    # Backwards compatible stub: run the new scanner in current dir
+    result = run_virus_scan(".")
+    r = result.get("result", {})
+    return list(r.get("findings", []))
 
 

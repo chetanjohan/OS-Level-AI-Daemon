@@ -11,7 +11,8 @@ from llm import generate_text
 from assistant import build_suggestions
 from privacy import normalize_level
 from optimizer import recommend_optimizations
-from security import anomaly_score, malware_scan_stub
+from security import anomaly_score
+from malware_scanner import virus_scan
 from maintenance import health_summary
 from commands import execute_command
 
@@ -78,9 +79,11 @@ def create_app() -> Flask:
 
     @app.get("/api/scan")
     def api_scan():
-        score = anomaly_score()
-        findings = malware_scan_stub()
-        return jsonify({"anomaly_score": score, "findings": findings})
+        target = request.args.get("dir") or "."
+        res = virus_scan(target)
+        # also include current anomaly score
+        res["result"]["anomaly_score"] = max(float(res["result"].get("anomaly_score", 0)), float(anomaly_score()))
+        return jsonify(res["result"])
 
     @app.get("/api/maintain")
     def api_maintain():
