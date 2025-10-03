@@ -21,6 +21,7 @@ import argparse
 from typing import Optional
 
 from llm import generate_text
+from monitor import SystemMonitor
 
 
 def fetch_task() -> Optional[str]:
@@ -33,7 +34,9 @@ class Daemon:
         self.interval = interval
         self.max_tokens = max_tokens
         self.backend = backend
+
         self.force_mock = force_mock
+        self.monitor: SystemMonitor | None = None
 
     def process_task(self, prompt: str) -> str:
         print("[Daemon] Processing task...")
@@ -69,6 +72,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--interval", type=int, default=5, help="Seconds between polls")
     p.add_argument("--max-tokens", type=int, default=50, help="Max tokens for generation")
     p.add_argument("--no-mock", dest="no_mock", action="store_true", help="Disable mock LLM (use local model) and require LLAMA_MODEL_PATH")
+    p.add_argument("--monitor", action="store_true", help="Enable system monitor (logs to monitor.log)")
     p.add_argument(
         "--backend",
         choices=["auto", "mock", "llama_cpp", "hf_api", "webui", "remote"],
@@ -83,6 +87,9 @@ def main():
     parser = build_arg_parser()
     args = parser.parse_args()
     daemon = Daemon(interval=args.interval, max_tokens=args.max_tokens, backend=args.backend, force_mock=not args.no_mock)
+    if args.monitor:
+        daemon.monitor = SystemMonitor(interval_seconds=max(1, args.interval))
+        daemon.monitor.start()
     if args.once:
         daemon.run_once()
     else:
