@@ -9,6 +9,8 @@
   --primary-600: #5457e8;
   --ring: rgba(99, 102, 241, 0.35);
   --border: #223051;
+  --glass: rgba(17, 25, 40, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.06);
 }
 
 * { box-sizing: border-box; }
@@ -26,10 +28,23 @@ body {
   grid-template-rows: auto 1fr auto;
 }
 
+.gradient-bg::before {
+  content: "";
+  position: fixed;
+  inset: -20% -10% auto auto;
+  width: 760px;
+  height: 760px;
+  background: radial-gradient(closest-side, rgba(99,102,241,0.25), rgba(99,102,241,0) 70%);
+  filter: blur(60px);
+  z-index: 0;
+}
+
 .header {
   padding: 32px 20px 12px;
   text-align: center;
 }
+.brand { display: inline-flex; gap: 12px; align-items: center; }
+.logo { width: 40px; height: 40px; }
 .header h1 {
   margin: 0 0 6px 0;
   font-weight: 700;
@@ -45,6 +60,12 @@ body {
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 40px 120px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.glass {
+  background: var(--glass);
+  backdrop-filter: saturate(180%) blur(16px);
+  border-color: var(--glass-border);
 }
 
 .form { display: grid; gap: 10px; }
@@ -85,6 +106,27 @@ textarea.input { resize: vertical; min-height: 100px; }
   transition: transform 0.05s ease, filter 0.2s ease;
 }
 .btn:active { transform: translateY(1px); }
+.btn.primary { background: linear-gradient(180deg, var(--primary) 0%, var(--primary-600) 100%); }
+.btn.ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: none;
+}
+
+.spinner {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border: 2px solid transparent;
+  border-top-color: white;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .output {
   margin-top: 18px;
@@ -95,10 +137,14 @@ textarea.input { resize: vertical; min-height: 100px; }
   white-space: pre-wrap;
   line-height: 1.5;
 }
+.output.code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.00) 100%), #0b1226;
+}
 
 .suggestions { margin-top: 18px; }
-#suggest-list { margin: 10px 0 0; padding-left: 18px; }
-#suggest-list li { margin: 6px 0; color: var(--text); }
+.list { margin: 10px 0 0; padding-left: 18px; }
+.list li { margin: 6px 0; color: var(--text); }
 
 .footer {
   color: var(--muted);

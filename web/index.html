@@ -4,16 +4,23 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>OS-Level-AI-Daemon</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="app">
+    <div class="app gradient-bg">
       <header class="header">
-        <h1>OS‑Level‑AI‑Daemon</h1>
-        <p class="subtitle">Lightweight local UI for quick prompts</p>
+        <div class="brand">
+          <img class="logo" alt="logo" src="/favicon.svg" />
+          <div>
+            <h1>OS‑Level‑AI‑Daemon</h1>
+            <p class="subtitle">Local-first AI control and insights</p>
+          </div>
+        </div>
       </header>
 
-      <main class="panel">
+      <main class="panel glass">
         <form id="gen-form" class="form" autocomplete="off">
           <label class="label" for="prompt">Prompt</label>
           <textarea id="prompt" class="input" rows="5" placeholder="Ask me anything..." required></textarea>
@@ -35,11 +42,10 @@
               </select>
             </div>
           </div>
-
-          <button class="btn" type="submit">Generate</button>
+          <button class="btn primary" type="submit"><span class="spinner" aria-hidden="true"></span><span>Generate</span></button>
         </form>
 
-        <section class="output" id="output"></section>
+        <section class="output code" id="output"></section>
 
         <section class="suggestions">
           <div class="row">
@@ -51,9 +57,9 @@
                 <option value="open">open</option>
               </select>
             </div>
-            <button id="btn-suggest" class="btn" type="button">Get suggestions</button>
+            <button id="btn-suggest" class="btn ghost" type="button">Get suggestions</button>
           </div>
-          <ul id="suggest-list"></ul>
+          <ul id="suggest-list" class="list"></ul>
         </section>
       </main>
 

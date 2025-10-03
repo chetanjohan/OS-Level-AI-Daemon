@@ -1,181 +1,70 @@
 # OS-Level AI Daemon
 
-An intelligent Python-based daemon for operating system monitoring, resource allocation, and anomaly detection using machine learning.
+Local-first AI daemon with system monitoring, lightweight heuristics, and a simple web UI.
 
-## Features
+## Quickstart
 
-### 🔍 System Monitoring
-- Real-time CPU, memory, disk, and network monitoring
-- Process-level resource tracking
-- Historical metrics collection and analysis
-
-### 🤖 AI-Powered Anomaly Detection
-- Machine learning-based anomaly detection using Isolation Forest
-- Automatic baseline establishment
-- Severity-based anomaly classification (LOW, MEDIUM, HIGH)
-
-### ⚙️ Intelligent Resource Allocation
-- Dynamic resource threshold monitoring
-- Automatic optimization recommendations
-- Top resource consumer identification
-
-### 📊 Intelligent Logging
-- Structured logging with multiple levels
-- Anomaly-specific logging with JSON export
-- Metric tracking and historical analysis
-
-## Installation
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/OS-Level-AI-Daemon.git
-cd OS-Level-AI-Daemon
-```
-
-2. Install dependencies:
-```bash
+python -m venv .venv
+# PowerShell
+. .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-3. Ensure you have appropriate permissions:
+### Run the daemon (mock LLM by default)
 ```bash
-# The daemon needs permissions to access system metrics
-# On Linux, you may need to run with sudo or configure capabilities
+python main.py --once              # single cycle
+python main.py --monitor           # continuous with system monitor logs
 ```
 
-## Usage
-
-### Running the Daemon
-
-#### Foreground Mode (for testing):
+### Run the web UI
 ```bash
-python os_ai_daemon.py
+python api.py
+# Open http://127.0.0.1:8000
 ```
 
-#### Background Mode (production):
-```bash
-# Using systemd (recommended for Linux)
-sudo cp os-ai-daemon.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl start os-ai-daemon
-sudo systemctl enable os-ai-daemon
-```
+## Web UI
+- Prompt text generation with selectable backend: `auto | mock | llama_cpp | hf_api | webui | remote`
+- Suggestions panel with privacy levels: `strict | balanced | open`
 
-### Configuration
+Endpoints served by the UI server:
+- POST `/api/generate` → `{ text }`
+- GET  `/api/suggest?privacy=<level>` → `{ suggestions: string[] }`
+- GET  `/api/optimize` → `{ optimizations: string[] }`
+- GET  `/api/scan` → `{ anomaly_score: number, findings: string[] }`
+- GET  `/api/maintain` → `{ maintenance: string[] }`
 
-Edit the daemon parameters in `os_ai_daemon.py`:
+## CLI options
+`main.py`:
+- `--interval <seconds>` polling interval (default 5)
+- `--max-tokens <n>` generation limit (default 50)
+- `--backend <name>` LLM backend selection
+- `--no-mock` use real backends when configured
+- `--monitor` start lightweight system monitoring (logs to `monitor.log`)
 
-```python
-# Monitoring interval (seconds)
-self.monitor_interval = 10
+## Modules
+- `llm.py` — backend routing to mock/llama.cpp/HF/webui/remote
+- `monitor.py` — CPU/MEM/DISK/NET snapshots, privacy-aware logs, basic heuristics, automation (temp cleanup, backup stub)
+- `assistant.py` — builds user suggestions (context + snapshot)
+- `context.py` — simple context inference (`idle|work|gaming` heuristics)
+- `privacy.py` — privacy levels and redaction
+- `optimizer.py` — resource optimization recommendations (log-only)
+- `security.py` — anomaly scoring + malware scan stub
+- `maintenance.py` — predictive maintenance tips (stub)
+- `learning.py` — tiny on-disk store for preferences/patterns
+- `api.py` — Flask server and static UI
 
-# Resource thresholds
-self.optimization_rules = {
-    'cpu_threshold': 80.0,
-    'memory_threshold': 85.0,
-    'disk_threshold': 90.0,
-}
-```
-
-### Logs
-
-Logs are stored in `/var/log/os-ai-daemon/` by default:
-- `daemon.log` - Main daemon log with all system metrics
-- `anomalies.json` - Detected anomalies in JSON format
-
-## Architecture
-
-```
-OS-Level-AI-Daemon/
-├── os_ai_daemon.py         # Main daemon implementation
-├── requirements.txt        # Python dependencies
-├── README.md              # This file
-├── setup.py               # Installation script
-├── os-ai-daemon.service   # Systemd service file
-└── tests/                 # Unit tests
-    └── test_daemon.py
-```
-
-## Components
-
-### AILogger
-Intelligent logging system with structured output and anomaly-specific logging.
-
-### SystemMonitor
-Real-time system monitoring with ML-powered anomaly detection using Isolation Forest algorithm.
-
-### ResourceAllocator
-AI-driven resource analysis and optimization recommendations.
-
-### OSDaemon
-Main daemon orchestrator managing all components.
-
-## Requirements
-
-- Python 3.8+
-- Linux, macOS, or Windows
-- Sufficient permissions for system monitoring
+## LLM backends
+- `mock` (default unless `--no-mock`): deterministic echo for development
+- `llama_cpp`: set `LLAMA_MODEL_PATH` to a local GGUF model
+- `hf_api`: set `HF_TOKEN` and `HF_MODEL`
+- `webui`: set `WEBUI_URL` if not default `http://127.0.0.1:7860`
+- `remote`: set `REMOTE_API_URL`
 
 ## Development
-
-### Running Tests
 ```bash
-python -m pytest tests/
+pytest -q
 ```
-
-### Code Style
-```bash
-# Format code
-black os_ai_daemon.py
-
-# Lint
-pylint os_ai_daemon.py
-```
-
-## Performance
-
-- Lightweight footprint (~20-50MB RAM)
-- Configurable monitoring interval
-- Efficient metric collection using psutil
-- ML model training only after baseline collection
-
-## Security Considerations
-
-- Runs with necessary system privileges
-- Logs are protected with appropriate permissions
-- No sensitive data is logged by default
-- Process information is handled securely
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
 
 ## License
-
-MIT License - see LICENSE file for details
-
-## Support
-
-For issues, questions, or contributions, please open an issue on GitHub.
-
-## Roadmap
-
-- [ ] Web dashboard for real-time monitoring
-- [ ] Email/Slack notifications for critical anomalies
-- [ ] Advanced ML models (LSTM, Autoencoders)
-- [ ] Multi-host monitoring and aggregation
-- [ ] Custom plugin system
-- [ ] Performance profiling tools
-- [ ] Container-aware monitoring
-- [ ] Cloud integration (AWS, Azure, GCP)
-
-## Acknowledgments
-
-Built with:
-- psutil for system monitoring
-- scikit-learn for machine learning
-- Python's built-in logging for structured logs
+MIT
