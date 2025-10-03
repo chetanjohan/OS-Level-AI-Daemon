@@ -9,8 +9,10 @@ from flask import Flask, request, jsonify, send_from_directory
 
 from llm import generate_text
 from assistant import build_suggestions
-from monitor import SystemMonitor
 from privacy import normalize_level
+from optimizer import recommend_optimizations
+from security import anomaly_score, malware_scan_stub
+from maintenance import health_summary
 
 
 def create_app() -> Flask:
@@ -59,6 +61,38 @@ def create_app() -> Flask:
         privacy = normalize_level(request.args.get("privacy"))
         tips = build_suggestions(snapshot, privacy)
         return jsonify({"suggestions": tips})
+
+    @app.get("/api/optimize")
+    def api_optimize():
+        try:
+            import psutil
+            cpu = psutil.cpu_percent(interval=0.0)
+            vm = psutil.virtual_memory()
+            du = psutil.disk_usage(os.getcwd())
+            snapshot = {"cpu_percent": float(cpu), "mem_percent": float(vm.percent), "disk_percent": float(du.percent)}
+        except Exception:
+            snapshot = {"cpu_percent": 0.0, "mem_percent": 0.0, "disk_percent": 0.0}
+        tips = recommend_optimizations(snapshot)
+        return jsonify({"optimizations": tips})
+
+    @app.get("/api/scan")
+    def api_scan():
+        score = anomaly_score()
+        findings = malware_scan_stub()
+        return jsonify({"anomaly_score": score, "findings": findings})
+
+    @app.get("/api/maintain")
+    def api_maintain():
+        try:
+            import psutil
+            cpu = psutil.cpu_percent(interval=0.0)
+            vm = psutil.virtual_memory()
+            du = psutil.disk_usage(os.getcwd())
+            snapshot = {"cpu_percent": float(cpu), "mem_percent": float(vm.percent), "disk_percent": float(du.percent)}
+        except Exception:
+            snapshot = {"cpu_percent": 0.0, "mem_percent": 0.0, "disk_percent": 0.0}
+        tips = health_summary(snapshot)
+        return jsonify({"maintenance": tips})
 
     return app
 
