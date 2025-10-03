@@ -15,6 +15,7 @@ from security import anomaly_score
 from malware_scanner import virus_scan
 from maintenance import health_summary
 from commands import execute_command
+from snapshot import full_system_snapshot
 
 
 def create_app() -> Flask:
@@ -104,6 +105,11 @@ def create_app() -> Flask:
         text = str(data.get("text", "")).strip()
         result = execute_command(text)
         return jsonify(result)
+
+    @app.get("/api/snapshot")
+    def api_snapshot():
+        snap = full_system_snapshot()
+        return jsonify(snap)
 
     return app
 

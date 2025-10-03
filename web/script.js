@@ -105,4 +105,23 @@ if (btnCommand) {
   btnCommand.addEventListener('click', runCommand);
 }
 
+// Snapshot
+const btnSnapshot = document.getElementById('btn-snapshot');
+async function fetchSnapshot() {
+  output.textContent = 'Fetching snapshot...';
+  try {
+    const res = await fetch('/api/snapshot');
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    output.textContent = JSON.stringify(data, null, 2);
+  } catch (err) {
+    output.textContent = `Error: ${err.message || err}`;
+  }
+}
+if (btnSnapshot) {
+  btnSnapshot.addEventListener('click', fetchSnapshot);
+}
+
 
