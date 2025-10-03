@@ -5,7 +5,7 @@ Simple Flask server exposing a text generation endpoint and serving a static UI.
 from __future__ import annotations
 
 import os
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template
 
 from llm import generate_text
 from assistant import build_suggestions
@@ -16,6 +16,8 @@ from malware_scanner import virus_scan
 from maintenance import health_summary
 from commands import execute_command
 from snapshot import full_system_snapshot
+import psutil
+import socket
 
 
 def create_app() -> Flask:
@@ -110,6 +112,61 @@ def create_app() -> Flask:
     def api_snapshot():
         snap = full_system_snapshot()
         return jsonify(snap)
+
+    # Simple server-rendered dashboard
+    def get_system_info():
+        try:
+            disk = psutil.disk_usage('/') if hasattr(psutil, 'disk_usage') else None
+        except Exception:
+            disk = None
+        try:
+            memory = psutil.virtual_memory()
+        except Exception:
+            memory = None
+
+        processes = []
+        try:
+            for p in psutil.process_iter(['name', 'memory_info', 'cpu_percent']):
+                try:
+                    info = p.info
+                    processes.append({
+                        "name": info.get('name'),
+                        "memory": round((info.get('memory_info').rss if info.get('memory_info') else 0) / (1024*1024), 1),
+                        "cpu": info.get('cpu_percent') or 0.0,
+                    })
+                except Exception:
+                    continue
+            # Sort by CPU desc and take top 10
+            processes.sort(key=lambda x: x.get('cpu') or 0, reverse=True)
+            processes = processes[:10]
+        except Exception:
+            processes = []
+
+        try:
+            hostname = socket.gethostname()
+            local_ip = socket.gethostbyname(hostname)
+        except Exception:
+            local_ip = "127.0.0.1"
+
+        return {
+            "disk": {
+                "percent": getattr(disk, 'percent', None) if disk else None,
+                "used": getattr(disk, 'used', None) if disk else None,
+                "total": getattr(disk, 'total', None) if disk else None,
+            },
+            "memory": {
+                "percent": getattr(memory, 'percent', None) if memory else None,
+                "used": getattr(memory, 'used', None) if memory else None,
+                "total": getattr(memory, 'total', None) if memory else None,
+            },
+            "processes": processes,
+            "ip": local_ip,
+        }
+
+    @app.get("/dashboard")
+    def dashboard():
+        data = get_system_info()
+        return render_template("dashboard.html", data=data)
 
     return app
 

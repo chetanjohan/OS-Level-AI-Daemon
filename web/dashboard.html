@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI System Dashboard</title>
+    <style>
+        body { font-family: Arial; background: #f4f4f9; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #333; color: #fff; }
+        .green { color: green; font-weight: bold; }
+        .yellow { color: #b58900; font-weight: bold; }
+        .red { color: red; font-weight: bold; }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <h1>🖥️ AI System Health Dashboard</h1>
+    <p><strong>Local IP:</strong> {{ data.ip }}</p>
+    <p><strong>Disk Usage:</strong> {{ data.disk.percent }}%</p>
+    <p><strong>Memory Usage:</strong> {{ data.memory.percent }}%</p>
+
+    <h2>Top Processes</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>CPU %</th>
+            <th>Memory (MB)</th>
+        </tr>
+        {% for p in data.processes %}
+        <tr>
+            <td>{{ p.name }}</td>
+            <td class="{{ 'green' if p.cpu<10 else 'yellow' if p.cpu<50 else 'red' }}">{{ p.cpu }}</td>
+            <td>{{ p.memory }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+  </body>
+  </html>
+
