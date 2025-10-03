@@ -40,6 +40,21 @@
         </form>
 
         <section class="output" id="output"></section>
+
+        <section class="suggestions">
+          <div class="row">
+            <div class="field">
+              <label class="sublabel" for="privacy">Privacy level</label>
+              <select id="privacy" class="input small">
+                <option value="balanced" selected>balanced</option>
+                <option value="strict">strict</option>
+                <option value="open">open</option>
+              </select>
+            </div>
+            <button id="btn-suggest" class="btn" type="button">Get suggestions</button>
+          </div>
+          <ul id="suggest-list"></ul>
+        </section>
       </main>
 
       <footer class="footer">

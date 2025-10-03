@@ -96,6 +96,10 @@ textarea.input { resize: vertical; min-height: 100px; }
   line-height: 1.5;
 }
 
+.suggestions { margin-top: 18px; }
+#suggest-list { margin: 10px 0 0; padding-left: 18px; }
+#suggest-list li { margin: 6px 0; color: var(--text); }
+
 .footer {
   color: var(--muted);
   text-align: center;

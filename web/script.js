@@ -27,4 +27,46 @@ async function generate(e) {
 
 form.addEventListener('submit', generate);
 
+// Suggestions UI
+const btnSuggest = document.getElementById('btn-suggest');
+const privacySel = document.getElementById('privacy');
+const suggestList = document.getElementById('suggest-list');
+
+async function fetchSuggestions() {
+  const privacy = privacySel.value;
+  suggestList.innerHTML = '';
+  const li = document.createElement('li');
+  li.textContent = 'Fetching suggestions...';
+  suggestList.appendChild(li);
+  try {
+    const res = await fetch(`/api/suggest?privacy=${encodeURIComponent(privacy)}`);
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    const items = Array.isArray(data.suggestions) ? data.suggestions : [];
+    suggestList.innerHTML = '';
+    if (!items.length) {
+      const liEmpty = document.createElement('li');
+      liEmpty.textContent = 'No suggestions at the moment.';
+      suggestList.appendChild(liEmpty);
+      return;
+    }
+    for (const tip of items) {
+      const liTip = document.createElement('li');
+      liTip.textContent = tip;
+      suggestList.appendChild(liTip);
+    }
+  } catch (err) {
+    suggestList.innerHTML = '';
+    const liErr = document.createElement('li');
+    liErr.textContent = `Error: ${err.message || err}`;
+    suggestList.appendChild(liErr);
+  }
+}
+
+if (btnSuggest) {
+  btnSuggest.addEventListener('click', fetchSuggestions);
+}
+
 
