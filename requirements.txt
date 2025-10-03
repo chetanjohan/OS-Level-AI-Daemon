@@ -4,3 +4,4 @@ llama-cpp-python # if you want local LLM integration
 requests        # for any HTTP API calls
 pytest          # for running unit tests
 huggingface_hub # to download model files from Hugging Face
+Flask           # lightweight web server for UI

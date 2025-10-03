@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OS-Level-AI-Daemon</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <h1>OS‑Level‑AI‑Daemon</h1>
+        <p class="subtitle">Lightweight local UI for quick prompts</p>
+      </header>
+
+      <main class="panel">
+        <form id="gen-form" class="form" autocomplete="off">
+          <label class="label" for="prompt">Prompt</label>
+          <textarea id="prompt" class="input" rows="5" placeholder="Ask me anything..." required></textarea>
+
+          <div class="row">
+            <div class="field">
+              <label class="sublabel" for="max_tokens">Max tokens</label>
+              <input id="max_tokens" class="input small" type="number" min="1" max="2048" value="50" />
+            </div>
+            <div class="field">
+              <label class="sublabel" for="backend">Backend</label>
+              <select id="backend" class="input small">
+                <option value="auto" selected>auto</option>
+                <option value="mock">mock</option>
+                <option value="llama_cpp">llama_cpp</option>
+                <option value="hf_api">hf_api</option>
+                <option value="webui">webui</option>
+                <option value="remote">remote</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn" type="submit">Generate</button>
+        </form>
+
+        <section class="output" id="output"></section>
+      </main>
+
+      <footer class="footer">
+        <span>Built with ❤️ for local-first workflows</span>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+  </html>
+
+
