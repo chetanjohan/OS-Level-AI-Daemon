@@ -13,6 +13,7 @@ from privacy import normalize_level
 from optimizer import recommend_optimizations
 from security import anomaly_score, malware_scan_stub
 from maintenance import health_summary
+from commands import execute_command
 
 
 def create_app() -> Flask:
@@ -93,6 +94,13 @@ def create_app() -> Flask:
             snapshot = {"cpu_percent": 0.0, "mem_percent": 0.0, "disk_percent": 0.0}
         tips = health_summary(snapshot)
         return jsonify({"maintenance": tips})
+
+    @app.post("/api/command")
+    def api_command():
+        data = request.get_json(silent=True) or {}
+        text = str(data.get("text", "")).strip()
+        result = execute_command(text)
+        return jsonify(result)
 
     return app
 

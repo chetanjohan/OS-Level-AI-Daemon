@@ -22,10 +22,17 @@
 
       <main class="panel glass">
         <form id="gen-form" class="form" autocomplete="off">
-          <label class="label" for="prompt">Prompt</label>
-          <textarea id="prompt" class="input" rows="5" placeholder="Ask me anything..." required></textarea>
+          <label class="label" for="prompt">Prompt / Command</label>
+          <textarea id="prompt" class="input" rows="5" placeholder="Ask me anything... or type a command like 'check cpu stability'" required></textarea>
 
           <div class="row">
+            <div class="field">
+              <label class="sublabel" for="mode">Mode</label>
+              <select id="mode" class="input small">
+                <option value="generate" selected>Generate</option>
+                <option value="command">Command</option>
+              </select>
+            </div>
             <div class="field">
               <label class="sublabel" for="max_tokens">Max tokens</label>
               <input id="max_tokens" class="input small" type="number" min="1" max="2048" value="50" />
@@ -42,7 +49,11 @@
               </select>
             </div>
           </div>
-          <button class="btn primary" type="submit"><span class="spinner" aria-hidden="true"></span><span>Generate</span></button>
+
+          <div class="row">
+            <button class="btn primary" id="btn-generate" type="submit"><span class="spinner" aria-hidden="true"></span><span>Generate</span></button>
+            <button class="btn ghost" id="btn-command" type="button">Run command</button>
+          </div>
         </form>
 
         <section class="output code" id="output"></section>
