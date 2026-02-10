@@ -22,7 +22,8 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 # Install Dependencies
 pip install -r requirements.txt
 
-# Running the DaemonThe daemon handles the system monitoring and background logic.Bash# Run a single check-in cycle
+# Running the Daemon
+The daemon handles the system monitoring and background logic.Bash# Run a single check-in cycle
 python main.py --once
 
 python main.py --monitor
