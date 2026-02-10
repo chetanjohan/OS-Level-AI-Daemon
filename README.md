@@ -1,220 +1,53 @@
-# OS-Level AI Daemon
+## OS-Level AI Daemon (OSAD)
+OS-Level AI Daemon (OSAD)A local-first system intelligence daemon that runs in the background of your OS. It observes system state, applies lightweight heuristics, and exposes a private API for contextual suggestions and automation.No cloud dependency. No surveillance. Mocked LLMs by default.🧠 The PhilosophyMost "AI Assistants" are just fancy wrappers for a chat box. OSAD is different. It is designed to be a "background systems brain" that understands the difference between you compiling code, playing a game, or idling, providing optimizations without needing an internet connection.Privacy First: Aggressive redaction of sensitive data before it ever hits an LLM.Resource Aware: Runs with low priority to ensure it never steals cycles from your actual work.Pluggable: Swap between a zero-resource "Mock" mode, local GGUF models, or remote APIs.🏗️
 
-A **local-first AI daemon** that runs alongside your operating system, observes system state, applies lightweight heuristics, and exposes a simple web UI + API for suggestions, monitoring, and automation.
+# ArchitectureCode snippetgraph TD
+    A[OS Metrics: CPU/RAM/Disk] --> B[monitor.py: Snapshots]
+    B --> C[context.py: Inference]
+    C --> D[assistant.py: Prompt Assembly]
+    D --> E{llm.py: Router}
+    E -->|Default| F[Mock / Deterministic]
+    E -->|Local| G[llama.cpp / GGUF]
+    E -->|Remote| H[HF / Custom API]
+    F/G/H --> I[api.py: Web UI & JSON API]
 
-No cloud dependency by default. No surveillance cosplay. Mocked LLMs until you explicitly opt into real ones.
+# 🚀 Quickstart1. Environment SetupBash# Clone the repository
+git clone https://github.com/yourutils/os-ai-daemon.git
+cd os-ai-daemon
 
----
-
-## What This Is
-
-This project is an **OS-resident assistant service**, not a chatbot app.
-
-It is designed to:
-
-- Run continuously or on demand
-- Observe **CPU, memory, disk, and network state**
-- Infer **high-level context** like `idle`, `work`, or `gaming`
-- Generate **suggestions and optimizations** based on that context
-- Respect **privacy levels** and redact aggressively by default
-- Expose everything through a **local web UI + JSON API**
-- Support **multiple LLM backends**, including zero-LLM mock mode
-
-Think “background systems brain,” not “AI friend.”
-
----
-
-## What This Is Not
-
-- Not a cloud service  
-- Not a kernel module  
-- Not spyware  
-- Not a full automation engine (yet)  
-- Not dependent on any single LLM vendor  
-
----
-
-## Architecture Overview
-
-┌─────────────┐
-│ OS Metrics │ CPU / MEM / DISK / NET
-└─────┬───────┘
-↓
-┌─────────────┐
-│ monitor.py │ snapshots + heuristics
-└─────┬───────┘
-↓
-┌─────────────┐
-│ context.py │ idle | work | gaming
-└─────┬───────┘
-↓
-┌─────────────┐
-│ assistant │ suggestions + prompts
-└─────┬───────┘
-↓
-┌─────────────┐
-│ llm.py │ mock / local / remote
-└─────┬───────┘
-↓
-┌─────────────┐
-│ api.py │ Web UI + JSON API
-└─────────────┘
-
-
----
-
-## Features
-
-### Core
-- Local daemon loop with configurable interval
-- Deterministic **mock LLM** for development
-- Privacy-aware logging
-- Context inference from system state
-- On-disk lightweight learning store
-
-### Monitoring
-- CPU, memory, disk, network snapshots
-- Anomaly scoring (stub, expandable)
-- Monitor logs written to `monitor.log`
-
-### Suggestions & Intelligence
-- Contextual suggestions
-- Resource optimization hints (log-only)
-- Predictive maintenance stubs
-- Malware / anomaly scan stub
-
-### Interfaces
-- CLI
-- REST API
-- Local web UI
-
----
-
-## Quickstart
-
-### Environment Setup
-
-```bash
+# Setup Virtual Environment
 python -m venv .venv
-# PowerShell
-. .\.venv\Scripts\Activate.ps1
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# Install Dependencies
 pip install -r requirements.txt
 
-Run the Daemon
+# Running the DaemonThe daemon handles the system monitoring and background logic.Bash# Run a single check-in cycle
+python main.py --once
 
-Mock LLM is enabled by default.
+python main.py --monitor
 
-python main.py --once        # single execution cycle
-python main.py --monitor     # continuous loop + system monitoring
+# Launching the Interface
+In a separate terminal, start the local web server:Bashpython api.py
+View the dashboard at: http://127.0.0.1:8000⚙️ 
 
-Run the Web UI
-python api.py
+# Configuration
+OSAD uses environment variables for sensitive backend configurations.
+Variable,Description,Default
+LLM_BACKEND,"mock, llama_cpp, hf_api, remote",mock
+LOG_LEVEL,"DEBUG, INFO, WARNING",INFO
+LLAMA_MODEL_PATH,Path to your .gguf file,None
+HF_TOKEN,Hugging Face API Token,None
+DAEMON_INTERVAL,Seconds between system snapshots,5
 
+# 🛠️ Features & ModulesCore
+Intelligencecontext.py: Infers high-level states (idle, work, gaming, streaming).privacy.py: Filters process names and logs based on user-defined sensitivity levels.learning.py: A local-only SQLite/JSON store that remembers your preferences over time.Monitoring & Securitymonitor.py: Real-time snapshots of CPU, Memory, Disk, and Network IO.security.py: Heuristic-based anomaly detection (e.g., "Why is a calculator using 40% CPU?").maintenance.py: Stubs for predictive disk failure and cache cleanup alerts.
 
-Open:
+# 📡 API Endpoints (Local Only)
+MethodEndpointDescriptionGET/api/suggestReturns AI suggestions based on current system context.GET/api/metricsReturns the latest raw system snapshots.POST/api/generateDirect interaction with the configured LLM backend.GET/api/scanRuns a quick heuristic security/anomaly scan.
 
-http://127.0.0.1:8000
+# 🤝 Contributing
+Fork the ProjectCreate your Feature Branch (git checkout -b feature/AmazingFeature)Commit your Changes (git commit -m 'Add some AmazingFeature')Push to the Branch (git push origin feature/AmazingFeature)Open a Pull Request
 
-CLI Options
-
-main.py supports:
-
-Option	Description
---interval <seconds>	Polling interval (default: 5)
---max-tokens <n>	LLM generation cap (default: 50)
---backend <name>	LLM backend selection
---no-mock	Disable mock and use real backends
---monitor	Enable continuous monitoring + logging
-Web UI Capabilities
-
-Prompt-based text generation
-
-Backend switching:
-auto | mock | llama_cpp | hf_api | webui | remote
-
-Suggestions panel with privacy levels:
-strict | balanced | open
-
-API Endpoints
-
-All endpoints are local-only by default.
-
-Method	Endpoint	Description
-POST	/api/generate	Generate text
-GET	/api/suggest?privacy=<level>	Contextual suggestions
-GET	/api/optimize	Optimization recommendations
-GET	/api/scan	Anomaly scan
-GET	/api/maintain	Maintenance suggestions
-LLM Backends
-mock (default)
-
-Deterministic echo backend
-
-Zero network calls
-
-Ideal for development and testing
-
-llama_cpp
-
-Local GGUF model
-
-Requires:
-
-export LLAMA_MODEL_PATH=/path/to/model.gguf
-
-hf_api
-
-Hugging Face Inference API
-
-Requires:
-
-export HF_TOKEN=...
-export HF_MODEL=...
-
-webui
-
-Stable Diffusion / text web UI compatible
-
-Default:
-
-http://127.0.0.1:7860
-
-remote
-
-Generic remote LLM endpoint
-
-Requires:
-
-export REMOTE_API_URL=...
-
-Module Breakdown
-File	Responsibility
-llm.py	Backend routing and abstraction
-monitor.py	System snapshots, heuristics, automation hooks
-assistant.py	Suggestion and prompt assembly
-context.py	Context inference logic
-privacy.py	Privacy levels and redaction
-optimizer.py	Resource optimization (log-only)
-security.py	Anomaly scoring + malware stub
-maintenance.py	Predictive maintenance stub
-learning.py	On-disk preference store
-api.py	Flask server + static UI
-main.py	Daemon entry point
-Testing
-pytest -q
-
-Design Principles
-
-Local first
-
-Privacy by default
-
-Pluggable intelligence
-
-Graceful stubs over fake promises
-
-Everything inspectable
-
-License
-
-MIT
+# 📄 License
+Distributed under the MIT License. See LICENSE for more information.
